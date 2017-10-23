@@ -1,0 +1,34 @@
+#!/bin/bash
+SPECNAME=${1}
+RPMTREE=/rpmbuild
+
+[ ! -d "${RPMTREE}" ] && { echo "${RPMTREE} does not exist"; exit 1; }
+[ ! -r "${RPMTREE}" ] && { echo "${RPMTREE} is not readable"; exit 1; }
+[ ! -w "${RPMTREE}" ] && { echo "${RPMTREE} is not writable"; exit 1; }
+
+retrievesources() {
+    for SPECFILE in ${RPMTREE}/SPECS/*.spec;
+    do
+        FILENAME=$(basename ${SPECFILE})
+        SPECNAME=${FILENAME%.spec}
+        retrievesource ${SPECNAME}
+    done
+}
+
+retrievesource() {
+    SPECNAME=${1}
+    pushd ${RPMTREE}/SOURCES/${SPECNAME} > /dev/null 2>&1
+    echo "Retrieving sources for ${SPECNAME}..."
+    spectool -g ${RPMTREE}/SPECS/${SPECNAME}.spec
+    echo "Veryifing sha256sum for ${SPECNAME}..."
+    sha256sum -c *.sha256
+    popd > /dev/null 2>&1
+    echo "Done."
+}
+
+if [ -z "${SPECNAME}" ];
+then
+    retrievesources
+else
+    retrievesource ${SPECNAME}
+fi

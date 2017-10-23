@@ -1,0 +1,30 @@
+#!/bin/bash
+SPECNAME=${1}
+SRCTREE=/rpmbuild
+DSTTREE=/root/rpmbuild
+
+[ ! -d "${SRCTREE}" ] && { echo "${SRCTREE} does not exist"; exit 1; }
+[ ! -r "${SRCTREE}" ] && { echo "${SRCTREE} is not readable"; exit 1; }
+
+syncpackages() {
+    echo "Syncing all packages..."
+    rsync -av --no-owner --no-group ${SRCTREE}/{SPECS,SOURCES} ${DSTTREE}
+    echo "Done."
+}
+
+syncpackage() {
+    SPECNAME=${1}
+    echo "Syncing ${SPECNAME}..."
+    rsync -av --no-owner --no-group ${SRCTREE}/SPECS/${SPECNAME}.spec ${DSTTREE}/SPECS
+    rsync -av --no-owner --no-group ${SRCTREE}/SOURCES/${SPECNAME} ${DSTTREE}/SOURCES
+    echo "Done."
+}
+
+if [ -z "${SPECNAME}" ];
+then
+    rpmdev-setuptree
+    syncpackages
+else
+    rpmdev-setuptree
+    syncpackage ${SPECNAME}
+fi

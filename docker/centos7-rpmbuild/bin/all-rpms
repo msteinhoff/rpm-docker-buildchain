@@ -1,0 +1,10 @@
+#!/bin/bash
+sync-rpm-tree
+for SPECFILE in /root/rpmbuild/SPECS/*.spec;
+do
+    FILENAME=$(basename ${SPECFILE})
+    SPECNAME=${FILENAME%.spec}
+    echo "Building ${SPECNAME}..."
+    build-rpm ${SPECNAME}
+    echo "Done."
+done

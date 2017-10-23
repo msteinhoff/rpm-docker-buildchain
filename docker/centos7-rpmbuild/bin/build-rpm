@@ -1,0 +1,10 @@
+#!/bin/bash
+SPECNAME=${1}
+SPECFILE=/root/rpmbuild/SPECS/${SPECNAME}.spec
+
+[ -z "${SPECNAME}" ] && { echo "usage: $0 <name>"; exit 1; }
+[ ! -f "${SPECFILE}" ] && { echo "unable to read ${SPECFILE}"; exit 1;  }
+
+rpmbuild -bb ${SPECFILE}
+cp -Rv /root/rpmbuild/RPMS/* /rpmbuild/RPMS
+chown -Rv ${XUID}:${XUID} /rpmbuild/RPMS

@@ -1,0 +1,12 @@
+#!/bin/bash
+SPECNAME=${1}
+SPECFILE=/rpmbuild/SPECS/${SPECNAME}.spec
+SPECSOURCES=/rpmbuild/SOURCES/${SPECNAME}
+
+[ -z "${SPECNAME}" ] && { echo "usage: $0 <name>"; exit 1; }
+[ -f "${SPECFILE}" ] && { echo "spec ${SPECNAME}" already exists; exit 1; }
+
+rpmdev-newspec --output ${SPECFILE} ${SPECNAME}
+mkdir ${SPECSOURCES}
+chown ${XUID}:${XUID} ${SPECFILE}
+chown ${XUID}:${XUID} ${SPECSOURCES}

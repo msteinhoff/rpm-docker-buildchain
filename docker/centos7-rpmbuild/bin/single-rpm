@@ -1,0 +1,7 @@
+#!/bin/bash
+SPECNAME=${1}
+
+[ -z "${SPECNAME}" ] && { echo "usage: $0 <name>"; exit 1; }
+
+/usr/bin/sync-rpm-tree ${SPECNAME}
+/usr/bin/build-rpm ${SPECNAME}
