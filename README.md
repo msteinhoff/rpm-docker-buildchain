@@ -132,3 +132,9 @@ script, pass a custom `IMAGE` variable:
 
 **TODO:** Describe how to upgrade existing package which may already be
 installed somewhere without making people angry.
+
+# Credits
+
+This repo was inspired by Alan Franzoni's [fpm-within-docker][1].
+
+[1]: https://github.com/alanfranz/fpm-within-docker
