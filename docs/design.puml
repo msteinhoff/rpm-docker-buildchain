@@ -1,0 +1,49 @@
+@startuml
+actor "Package Author"
+[Package Spec]
+[Package Source]
+[RPM]
+[retrieve-sources]
+[build-package]
+[publish-package]
+[Yum Repository]
+actor "CentOS 7 Hosts"
+
+[Package Author] ..> [Package Spec] : Creates
+[Package Author] ..> [Package Source] : creates
+[Package Spec] <-- [retrieve-sources] : Reads URLs from SourceX: attributes
+[retrieve-sources] --> [Package Source] : Downloads files, verifies checksum
+[Package Spec] <-- [build-package] : Reads package spec file
+[Package Source] <-- [build-package] : Reads package sources
+[build-package] --> [RPM] : Builds RPM
+[RPM] <-- [publish-package] : Finds RPM to publish
+[publish-package] --> [Yum Repository] : Copies RPM to remote server, updates metadata
+[CentOS 7 Hosts] .left.> [Yum Repository] : Consumes RPMs
+
+note right of [Package Spec]
+    located at rpmbuild/SPECS/*.spec
+    ./build.sh create-spec foobar
+end note
+
+note right of [Package Source]
+    located at rpmbuild/SOURCES/*
+end note
+
+note right of [retrieve-sources]
+    ./build.sh retrieve-sources
+end note
+
+note right of [RPM]
+    located at rpmbuild/RPMS/*
+end note
+
+note right of [build-package]
+    ./build.sh all-rpms
+    ./build.sh single-rpm foobar
+end note
+
+note right of [publish-package]
+    ./publish.sh
+    ./publish.sh foobar
+end note
+@enduml

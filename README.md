@@ -9,16 +9,9 @@ The buildchain allows to retrieve and validate upstream sources, author RPM
 packages, build RPM packages, and publish RPM packages to remote yum
 repositories.
 
+![Design](docs/design.png "Design")
+
 All RPM commands are run in isolation via docker.
-
-**TODO**: PlantUML Diagram
-
-- how packages are built
-- what user must provide
-- what is generated automatically
-- which output goes to which input processes
-- where are packages stored
-- how to access packages on hosts
 
 # Prerequisites
 
