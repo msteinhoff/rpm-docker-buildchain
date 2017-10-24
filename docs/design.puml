@@ -10,7 +10,7 @@ actor "Package Author"
 actor "CentOS 7 Hosts"
 
 [Package Author] ..> [Package Spec] : Creates
-[Package Author] ..> [Package Source] : creates
+[Package Author] ..> [Package Source] : Adds service units, config files, patches, etc
 [Package Spec] <-- [retrieve-sources] : Reads URLs from SourceX: attributes
 [retrieve-sources] --> [Package Source] : Downloads files, verifies checksum
 [Package Spec] <-- [build-package] : Reads package spec file
