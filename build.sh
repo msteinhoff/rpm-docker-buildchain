@@ -1,8 +1,6 @@
 #!/bin/bash
-IMAGE=${IMAGE:-centos7-rpmbuild}
+IMAGE=${IMAGE:-msteinhoff/rpm-docker-buildchain:latest}
 COMMAND=${@:-/bin/bash}
-
-docker build -t ${IMAGE} docker/${IMAGE}
 docker run \
     -e XUID="$(id -u)" \
     -it \

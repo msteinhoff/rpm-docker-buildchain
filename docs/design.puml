@@ -1,49 +1,55 @@
 @startuml
+skinparam component {
+    backgroundColor<<Source>> Yellow
+    backgroundColor<<Process>> Green
+    backgroundColor<<Artifact>> Red
+}
+
 actor "Package Author"
-[Package Spec]
-[Package Source]
-[RPM]
-[retrieve-sources]
-[build-package]
+package "rpm-docker-buildchain" {
+    [Spec] <<Source>>
+    [retrieve-sources] <<Process>>
+    [Files] <<Source>>
+    [build-package] <<Process>>
+    [RPM] <<Artifact>>
+
+    [Package Author] ..> [Spec] : Create spec file
+    [Package Author] ..> [Files] : Add service unit, config files, patches, etc
+    [Spec] <-- [retrieve-sources] : Read URLs from SourceX: attributes
+    [retrieve-sources] --> [Files] : Download files, Verifiy checksums
+    [Spec] <-- [build-package] : Read spec file
+    [Files] <-- [build-package] : Read source files
+    [build-package] --> [RPM] : Build RPM
+
+    note right of [Spec]
+        ./build.sh create-spec foobar
+        rpmbuild/SPECS/{package}.spec
+    end note
+
+    note right of [Files]
+        rpmbuild/SOURCES/{package}
+    end note
+
+    note right of [retrieve-sources]
+        ./build.sh retrieve-sources
+    end note
+
+    note right of [RPM]
+        rpmbuild/RPMS/{arch}/{package}.rpm
+    end note
+
+    note right of [build-package]
+        ./build.sh all-rpms
+        ./build.sh single-rpm {package}
+    end note
+}
+
 [publish-package]
 [Yum Repository]
-actor "CentOS 7 Hosts"
+database "CentOS 7 Hosts"
 
-[Package Author] ..> [Package Spec] : Creates
-[Package Author] ..> [Package Source] : Adds service units, config files, patches, etc
-[Package Spec] <-- [retrieve-sources] : Reads URLs from SourceX: attributes
-[retrieve-sources] --> [Package Source] : Downloads files, verifies checksum
-[Package Spec] <-- [build-package] : Reads package spec file
-[Package Source] <-- [build-package] : Reads package sources
-[build-package] --> [RPM] : Builds RPM
-[RPM] <-- [publish-package] : Finds RPM to publish
-[publish-package] --> [Yum Repository] : Copies RPM to remote server, updates metadata
-[CentOS 7 Hosts] .left.> [Yum Repository] : Consumes RPMs
+[RPM] <.. [publish-package] : Find RPMs to publish
+[publish-package] .right.> [Yum Repository] : Copy RPM to remote server\nUpdate yum metadata
+[CentOS 7 Hosts] .up.> [Yum Repository] : Download, Install/Update RPMs
 
-note right of [Package Spec]
-    located at rpmbuild/SPECS/*.spec
-    ./build.sh create-spec foobar
-end note
-
-note right of [Package Source]
-    located at rpmbuild/SOURCES/*
-end note
-
-note right of [retrieve-sources]
-    ./build.sh retrieve-sources
-end note
-
-note right of [RPM]
-    located at rpmbuild/RPMS/*
-end note
-
-note right of [build-package]
-    ./build.sh all-rpms
-    ./build.sh single-rpm foobar
-end note
-
-note right of [publish-package]
-    ./publish.sh
-    ./publish.sh foobar
-end note
 @enduml
